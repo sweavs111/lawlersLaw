@@ -19,7 +19,7 @@ func analyze() {
 	var avg float64 // avg winning score
 	var mp map[int]*analysis.Point
 	var winningScoreAvg []string = []string{"year\tavgScore"}
-	var winPerAt100 []string = []string{"year\twinPercentage"}
+	var winPerAt100 []string = []string{"year\twinPercentage\tgamesPlayed"}
 	for i := 1997; i < 2025; i++ {
 		g = rw.ReadGames(fmt.Sprintf("data/raw/%d.pbp.txt", i))
 		mp, avg = analysis.WinningScoreDist(g)
@@ -29,7 +29,7 @@ func analyze() {
 		rw.WritePointsLedDist(mp, fmt.Sprintf("data/process/%d.pointsLedDist.txt", i))
 		analysis.GetDenominator(mp)
 		analysis.PointsLedWinPercentage(mp)
-		winPerAt100 = append(winPerAt100, fmt.Sprintf("%d\t%f", i, mp[100].WinPerc))
+		winPerAt100 = append(winPerAt100, fmt.Sprintf("%d\t%f\t%d", i, mp[100].WinPerc, mp[100].GamesPlayed))
 		analysis.CalcP(mp)
 		rw.WritePointsLedWinPercentage(mp, fmt.Sprintf("data/process/%d.pointsLedWinPerc.txt", i))
 	}
