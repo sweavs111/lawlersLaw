@@ -7,7 +7,7 @@ for (x in 1997:2024) {
   str = paste("~/lawlersLaw/data/process/", as.character(x), ".winningScoreDist.txt", sep = "")
   df = read.delim(str, sep = "\t")
   p = ggbarplot(df, x = "score", y = "frequency", fill = 'dark green', color = 'dark green') +
-    xlim(0, max(df$score+10)) + geom_hline(yintercept = 0) + xlab("Winning score") + ylab("Frequency")
+    xlim(0, max(df$score+10)) + geom_hline(yintercept = 0) + xlab("Winning score") + ylab("Frequency") +
     ggtitle(paste(x, "winning score distribution"))
   ggsave(paste("~/lawlersLaw/plot/winningScoreDistByYear/", as.character(x), ".winningScoreDist.png", sep = ""), plot = p)
 }
@@ -32,20 +32,30 @@ for (x in 1997:2024) {
   ggsave(paste("~/lawlersLaw/plot/pointsLedWinPercByYear/", as.character(x), ".pointsLedWinPerc.png", sep = ""), plot = p)
 }
 
-#some geom_ridge stuff
-rdg = read.delim("~/overUnderModel/data/process/allYearsWinningScoreDist.txt", sep ="\t")
+
+
+
+# geom_ridge winning score dist by year
+rdg = read.delim("~/lawlersLaw/data/process/allYearsWinningScoreDist.txt", sep ="\t")
 rdg$year = as.factor(rdg$year)
-ggplot(rdg, aes(x = score, y = year, fill = year)) + geom_density_ridges_gradient(scale = 4, rel_min_height = 0.01) + 
-  scale_fill_viridis_d(name = "year", option = "C") + #theme_classic() +
-  xlim(0, 180) + geom_vline(xintercept = 102.3, color = "white", linetype = "dashed") + 
-  geom_vline(xintercept = 119.9, color = "white", linetype = "dashed")
+p = ggplot(rdg, aes(x = score, y = year, fill = year)) + geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, bandwidth = 6) + 
+  scale_fill_viridis_d(name = "year", option = "C") + theme_classic() + theme(legend.position = "none") +
+  xlim(0, 180) + xlab("Winning Score Distribution") + ggtitle("Winning score distribution by year")
+ggsave("~/lawlersLaw/plot/winningScoreDistByYear.ridge.png", plot = p)
+# avg winning score by year
+avgScore = read.delim("~/lawlersLaw/data/process/avgWinningScoreByYear.txt", sep = "\t")
+avgScore$year = as.factor(avgScore$year)
+p = ggbarplot(avgScore, x = "year", y = "avgScore", fill = "avgScore") + coord_cartesian(ylim = c(90, 125)) + 
+  ylab("Average Winning Score") + theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) + ggtitle('Average winning score by year')
+ggsave("~/lawlersLaw/plot/avgWinningScoreByYear.png", plot = p)
 
-rdg2 = read.delim("~/overUnderModel/data/process/06to23.winningScoreDist.txt", sep = "\t")
-rdg2$year = as.factor(rdg2$year)
-ggplot(rdg2, aes(x = score, y = year, fill = year)) + geom_density_ridges(scale = 3, rel_min_height = 0.01) + theme_classic()
-
-df4 = read.delim("~/overUnderModel/data/process/winningPercAt100.txt", sep = "\t")
-ggbarplot(df4, x = "year", y = "winningPerc", fill = "gamesPlayed", color = "gamesPlayed") + coord_cartesian(ylim=c(0.8,1))
+#winning percentage at 100, lawlers law value
+df = read.delim("~/lawlersLaw/data/process/winPercentAt100ByYear.txt", sep = "\t")
+df$year = as.factor(df$year)
+p = ggbarplot(df, x = "year", y = "winPercentage", fill = "gamesPlayed", color = "gamesPlayed") +
+  coord_cartesian(ylim=c(0.8,1)) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylab("Winning Percentage") + xlab("Year") + ggtitle("Lawlers Law value by year. (Win % of first team to 100)")
+ggsave("~/lawlersLaw/plot/lawlersLawValueByYear.png", plot = p)
 
 #binomal distribution
 bd = read.delim("~/overUnderModel/data/process/bd.txt", sep ="\t")
